@@ -1,0 +1,43 @@
+<div class="dashboard">
+  <aside class="sidebar">
+    <div class="logo">Dashboard</div>
+    <nav>
+      <a class="nav-item active" href="#">Visão geral</a>
+      <a class="nav-item" href="#">Relatórios</a>
+      <a class="nav-item" href="#">Configurações</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="user-info">
+        <span>{{ userEmail() }}</span>
+      </div>
+      <button class="logout-btn" (click)="logout()">Sair</button>
+    </header>
+
+    <section class="content">
+      <h1>Bem-vindo de volta!</h1>
+      <p class="description">Aqui está um resumo rápido do seu painel.</p>
+
+      <div class="cards">
+        <div class="card">
+          <h3>Usuários</h3>
+          <span class="value">1.248</span>
+        </div>
+        <div class="card">
+          <h3>Receita</h3>
+          <span class="value">R$ 42.500</span>
+        </div>
+        <div class="card">
+          <h3>Pedidos</h3>
+          <span class="value">320</span>
+        </div>
+        <div class="card">
+          <h3>Crescimento</h3>
+          <span class="value">+12%</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
