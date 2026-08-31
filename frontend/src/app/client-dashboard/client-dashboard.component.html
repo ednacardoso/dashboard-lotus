@@ -1,0 +1,40 @@
+<div class="dashboard">
+  <aside class="sidebar">
+    <img src="/logo.png" alt="Lótus Saúde" class="logo" />
+    <nav>
+      <a class="nav-item active" href="#">Meus agendamentos</a>
+      <a class="nav-item" href="#">Novo agendamento</a>
+      <a class="nav-item" href="#">Histórico</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="user-info">
+        <span>{{ userName() }}</span>
+        <small>{{ userEmail() }}</small>
+      </div>
+      <button class="logout-btn" (click)="logout()">Sair</button>
+    </header>
+
+    <section class="content">
+      <h1>Olá, {{ userName() || 'Cliente' }}!</h1>
+      <p class="description">Acompanhe seus agendamentos e serviços.</p>
+
+      <div class="cards">
+        <div class="card">
+          <h3>Próximos agendamentos</h3>
+          <span class="value">2</span>
+        </div>
+        <div class="card">
+          <h3>Serviços realizados</h3>
+          <span class="value">12</span>
+        </div>
+        <div class="card">
+          <h3>Pendências</h3>
+          <span class="value">0</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

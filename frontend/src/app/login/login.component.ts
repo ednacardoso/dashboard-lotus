@@ -44,7 +44,7 @@ export class LoginComponent {
 
     const credentials: LoginRequest = this.loginForm.value as LoginRequest;
     this.authService.login(credentials).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => this.router.navigate([this.authService.getDashboardRoute()]),
       error: (err) => {
         this.errorMessage.set(err);
         this.isLoading.set(false);
@@ -60,7 +60,7 @@ export class LoginComponent {
 
     const data: RegisterRequest = this.registerForm.value as RegisterRequest;
     this.authService.register(data).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => this.router.navigate([this.authService.getDashboardRoute()]),
       error: (err) => {
         this.errorMessage.set(err);
         this.isLoading.set(false);

@@ -26,10 +26,15 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String email, String name) {
+    public String generateToken(String email, String name, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("name", name);
+        claims.put("role", role);
         return createToken(claims, email);
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
     private String createToken(Map<String, Object> claims, String subject) {

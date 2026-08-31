@@ -7,6 +7,7 @@ export interface AuthResponse {
   token: string;
   email: string;
   name: string;
+  role: string;
 }
 
 export interface LoginRequest {
@@ -21,12 +22,14 @@ export interface RegisterRequest {
 }
 
 const TOKEN_KEY = 'auth_token';
+const ROLE_KEY = 'auth_role';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly apiUrl = '/api/auth';
 
   private token = signal<string | null>(localStorage.getItem(TOKEN_KEY));
+  private userRole = signal<string | null>(localStorage.getItem(ROLE_KEY));
   isAuthenticated = computed(() => !!this.token());
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -47,7 +50,9 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(ROLE_KEY);
     this.token.set(null);
+    this.userRole.set(null);
     this.router.navigate(['/login']);
   }
 
@@ -55,9 +60,33 @@ export class AuthService {
     return this.token();
   }
 
+  getRole(): string | null {
+    return this.userRole();
+  }
+
+  hasRole(role: string): boolean {
+    return this.userRole() === role;
+  }
+
+  getDashboardRoute(): string {
+    const role = this.userRole();
+    switch (role) {
+      case 'ADMIN':
+        return '/dashboard';
+      case 'CLIENT':
+        return '/cliente';
+      case 'PROFESSIONAL':
+        return '/profissional';
+      default:
+        return '/login';
+    }
+  }
+
   private setSession(response: AuthResponse): void {
     localStorage.setItem(TOKEN_KEY, response.token);
+    localStorage.setItem(ROLE_KEY, response.role);
     this.token.set(response.token);
+    this.userRole.set(response.role);
   }
 
   private extractError(error: any): string {

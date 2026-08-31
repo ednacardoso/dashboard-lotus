@@ -1,0 +1,40 @@
+<div class="dashboard">
+  <aside class="sidebar">
+    <img src="/logo.png" alt="Lótus Saúde" class="logo" />
+    <nav>
+      <a class="nav-item active" href="#">Minha agenda</a>
+      <a class="nav-item" href="#">Clientes</a>
+      <a class="nav-item" href="#">Serviços</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="user-info">
+        <span>{{ userName() }}</span>
+        <small>{{ userEmail() }}</small>
+      </div>
+      <button class="logout-btn" (click)="logout()">Sair</button>
+    </header>
+
+    <section class="content">
+      <h1>Olá, {{ userName() || 'Profissional' }}!</h1>
+      <p class="description">Gerencie sua agenda e atendimentos.</p>
+
+      <div class="cards">
+        <div class="card">
+          <h3>Atendimentos hoje</h3>
+          <span class="value">4</span>
+        </div>
+        <div class="card">
+          <h3>Clientes atendidos</h3>
+          <span class="value">28</span>
+        </div>
+        <div class="card">
+          <h3>Horários disponíveis</h3>
+          <span class="value">6</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

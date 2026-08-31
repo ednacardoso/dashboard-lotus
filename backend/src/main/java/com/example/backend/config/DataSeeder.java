@@ -23,6 +23,26 @@ public class DataSeeder {
                         .build();
                 userRepository.save(admin);
             }
+
+            if (userRepository.findByEmail("cliente@example.com").isEmpty()) {
+                User client = User.builder()
+                        .name("Cliente Teste")
+                        .email("cliente@example.com")
+                        .password(passwordEncoder.encode("cliente123"))
+                        .role(Role.CLIENT)
+                        .build();
+                userRepository.save(client);
+            }
+
+            if (userRepository.findByEmail("profissional@example.com").isEmpty()) {
+                User professional = User.builder()
+                        .name("Profissional Teste")
+                        .email("profissional@example.com")
+                        .password(passwordEncoder.encode("profissional123"))
+                        .role(Role.PROFESSIONAL)
+                        .build();
+                userRepository.save(professional);
+            }
         };
     }
 }

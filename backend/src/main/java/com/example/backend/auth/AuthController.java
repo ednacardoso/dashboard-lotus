@@ -30,8 +30,13 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<Map<String, String>> me(@AuthenticationPrincipal UserDetails userDetails) {
+        String role = userDetails.getAuthorities().stream()
+                .findFirst()
+                .map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", ""))
+                .orElse("");
         return ResponseEntity.ok(Map.of(
-                "email", userDetails.getUsername()
+                "email", userDetails.getUsername(),
+                "role", role
         ));
     }
 }

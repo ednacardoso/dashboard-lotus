@@ -7,7 +7,7 @@ export const loginGuard: CanActivateFn = () => {
   const router = inject(Router);
 
   if (authService.isAuthenticated()) {
-    return router.parseUrl('/dashboard');
+    return router.parseUrl(authService.getDashboardRoute());
   }
 
   return true;
