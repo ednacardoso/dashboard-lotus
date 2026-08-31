@@ -32,6 +32,8 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    private String specialty;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 }
