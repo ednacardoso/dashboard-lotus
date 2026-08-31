@@ -11,8 +11,9 @@
   padding: 1.5rem 1rem;
 
   .logo {
-    font-size: 1.25rem;
-    font-weight: 700;
+    display: block;
+    max-width: 160px;
+    height: auto;
     margin-bottom: 2rem;
     padding-left: 0.75rem;
   }

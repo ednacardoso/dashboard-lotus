@@ -1,7 +1,7 @@
 <div class="login-container">
   <div class="login-card">
+    <img src="/logo.png" alt="Lótus Saúde" class="logo" />
     <h1>{{ isRegistering() ? 'Criar conta' : 'Entrar' }}</h1>
-    <p class="subtitle">Dashboard</p>
 
     @if (errorMessage()) {
       <div class="error">{{ errorMessage() }}</div>
