@@ -60,6 +60,17 @@ export interface CreateProfessionalRequest extends CreateUserRequest {
   specialty: string;
 }
 
+export interface UpdateProfessionalRequest {
+  name: string;
+  email: string;
+  specialty: string;
+}
+
+export interface UpdateClientRequest {
+  name: string;
+  email: string;
+}
+
 export interface CreateUserResponse {
   id: number;
   name: string;

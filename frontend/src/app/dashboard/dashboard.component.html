@@ -71,7 +71,7 @@
         <p class="description">Gerencie os profissionais da clínica.</p>
 
         <div class="form-card">
-          <h2>Cadastrar profissional</h2>
+          <h2>{{ editingProfessional() ? 'Editar profissional' : 'Cadastrar profissional' }}</h2>
           <form [formGroup]="professionalForm" (ngSubmit)="createProfessional()" class="user-form">
             <div class="form-row">
               <label>
@@ -88,12 +88,12 @@
               </label>
             </div>
 
-            <label class="checkbox-label">
+            <label class="checkbox-label" *ngIf="!editingProfessional()">
               <input type="checkbox" formControlName="definePassword" (change)="onDefineProfessionalPasswordChange()" />
               Definir senha manualmente
             </label>
 
-            <div class="form-row" *ngIf="professionalForm.get('definePassword')?.value">
+            <div class="form-row" *ngIf="!editingProfessional() && professionalForm.get('definePassword')?.value">
               <label class="password-field">
                 Senha
                 <input [type]="showProfessionalPassword() ? 'text' : 'password'" formControlName="password" placeholder="Mínimo 8 caracteres, maiúscula, minúscula, número e símbolo" />
@@ -108,7 +108,8 @@
             </div>
 
             <div class="form-actions">
-              <button type="submit" class="primary-btn" [disabled]="professionalForm.invalid">Cadastrar</button>
+              <button type="button" class="secondary-btn" *ngIf="editingProfessional()" (click)="cancelEditProfessional()">Cancelar</button>
+              <button type="submit" class="primary-btn" [disabled]="professionalForm.invalid">{{ editingProfessional() ? 'Salvar' : 'Cadastrar' }}</button>
             </div>
           </form>
         </div>
@@ -122,6 +123,10 @@
                 <span>{{ professional.email }}</span>
                 <small>{{ professional.specialty }} — Cadastrado em {{ professional.createdAt | date:'dd/MM/yyyy' }}</small>
               </div>
+              <div class="item-actions">
+                <button class="edit-btn" (click)="startEditProfessional(professional)">Editar</button>
+                <button class="delete-btn" (click)="deleteProfessional(professional.id)">Excluir</button>
+              </div>
             </li>
           </ul>
           <p *ngIf="professionals().length === 0" class="empty-state">Nenhum profissional cadastrado.</p>
@@ -133,7 +138,7 @@
         <p class="description">Gerencie os clientes da clínica.</p>
 
         <div class="form-card">
-          <h2>Cadastrar cliente</h2>
+          <h2>{{ editingClient() ? 'Editar cliente' : 'Cadastrar cliente' }}</h2>
           <form [formGroup]="clientForm" (ngSubmit)="createClient()" class="user-form">
             <div class="form-row">
               <label>
@@ -146,12 +151,12 @@
               </label>
             </div>
 
-            <label class="checkbox-label">
+            <label class="checkbox-label" *ngIf="!editingClient()">
               <input type="checkbox" formControlName="definePassword" (change)="onDefineClientPasswordChange()" />
               Definir senha manualmente
             </label>
 
-            <div class="form-row" *ngIf="clientForm.get('definePassword')?.value">
+            <div class="form-row" *ngIf="!editingClient() && clientForm.get('definePassword')?.value">
               <label class="password-field">
                 Senha
                 <input [type]="showClientPassword() ? 'text' : 'password'" formControlName="password" placeholder="Mínimo 8 caracteres, maiúscula, minúscula, número e símbolo" />
@@ -166,7 +171,8 @@
             </div>
 
             <div class="form-actions">
-              <button type="submit" class="primary-btn" [disabled]="clientForm.invalid">Cadastrar</button>
+              <button type="button" class="secondary-btn" *ngIf="editingClient()" (click)="cancelEditClient()">Cancelar</button>
+              <button type="submit" class="primary-btn" [disabled]="clientForm.invalid">{{ editingClient() ? 'Salvar' : 'Cadastrar' }}</button>
             </div>
           </form>
         </div>
@@ -179,6 +185,10 @@
                 <strong>{{ client.name }}</strong>
                 <span>{{ client.email }}</span>
                 <small>Cadastrado em {{ client.createdAt | date:'dd/MM/yyyy' }}</small>
+              </div>
+              <div class="item-actions">
+                <button class="edit-btn" (click)="startEditClient(client)">Editar</button>
+                <button class="delete-btn" (click)="deleteClient(client.id)">Excluir</button>
               </div>
             </li>
           </ul>
@@ -213,7 +223,7 @@
         <p class="description">Gerencie salas e alocações mensais.</p>
 
         <div class="form-card">
-          <h2>Cadastrar sala</h2>
+          <h2>{{ editingRoom() ? 'Editar sala' : 'Cadastrar sala' }}</h2>
           <form [formGroup]="roomForm" (ngSubmit)="createRoom()" class="user-form">
             <div class="form-row">
               <label>
@@ -234,7 +244,8 @@
               </label>
             </div>
             <div class="form-actions">
-              <button type="submit" class="primary-btn" [disabled]="roomForm.invalid">Cadastrar</button>
+              <button type="button" class="secondary-btn" *ngIf="editingRoom()" (click)="cancelEditRoom()">Cancelar</button>
+              <button type="submit" class="primary-btn" [disabled]="roomForm.invalid">{{ editingRoom() ? 'Salvar' : 'Cadastrar' }}</button>
             </div>
           </form>
         </div>
@@ -285,6 +296,8 @@
                 <span class="badge" [class.active]="room.active" [class.inactive]="!room.active">
                   {{ room.active ? 'Ativa' : 'Inativa' }}
                 </span>
+                <button class="edit-btn" (click)="startEditRoom(room)">Editar</button>
+                <button class="delete-btn" (click)="deleteRoom(room.id)">Excluir</button>
                 <button class="secondary-btn" (click)="toggleRoom(room.id)">
                   {{ room.active ? 'Desativar' : 'Ativar' }}
                 </button>

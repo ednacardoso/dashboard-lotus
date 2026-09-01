@@ -2,6 +2,7 @@ package com.example.backend.room;
 
 import com.example.backend.user.User;
 import com.example.backend.user.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +52,7 @@ public class RoomService {
     @Transactional
     public RoomResponse update(Long id, RoomRequest request) {
         Room room = roomRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
+                .orElseThrow(() -> new EntityNotFoundException("Sala não encontrada"));
 
         room.setName(request.name());
         room.setDescription(request.description());
@@ -64,10 +65,18 @@ public class RoomService {
     @Transactional
     public RoomResponse toggleActive(Long id) {
         Room room = roomRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
+                .orElseThrow(() -> new EntityNotFoundException("Sala não encontrada"));
 
         room.setActive(!room.isActive());
         return toResponse(roomRepository.save(room));
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Sala não encontrada"));
+
+        roomRepository.delete(room);
     }
 
     public List<RoomRentalResponse> listRentals(String yearMonth) {
@@ -82,7 +91,7 @@ public class RoomService {
                 .orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
 
         Room room = roomRepository.findById(request.roomId())
-                .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
+                .orElseThrow(() -> new EntityNotFoundException("Sala não encontrada"));
 
         if (!room.isActive()) {
             throw new RuntimeException("Não é possível vincular uma sala inativa");

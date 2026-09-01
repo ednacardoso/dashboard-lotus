@@ -54,6 +54,20 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/professionals/{id}")
+    public ResponseEntity<AdminUserResponse> updateProfessional(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateProfessionalRequest request) {
+        AdminUserResponse response = adminProfessionalService.updateProfessional(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/professionals/{id}")
+    public ResponseEntity<Void> deleteProfessional(@PathVariable Long id) {
+        adminProfessionalService.deleteProfessional(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/clients")
     public ResponseEntity<CreateUserResponse> createClient(
             @RequestBody @Valid CreateClientRequest request) {
@@ -75,6 +89,20 @@ public class AdminController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/clients/{id}")
+    public ResponseEntity<AdminUserResponse> updateClient(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateClientRequest request) {
+        AdminUserResponse response = adminClientService.updateClient(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/clients/{id}")
+    public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
+        adminClientService.deleteClient(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/appointments")

@@ -4,6 +4,7 @@ import com.example.backend.user.Role;
 import com.example.backend.user.User;
 import com.example.backend.user.UserRepository;
 import com.example.backend.util.PasswordGenerator;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -46,5 +47,37 @@ public class AdminClientService {
                 generated,
                 password
         );
+    }
+
+    public AdminUserResponse updateClient(Long id, UpdateClientRequest request) {
+        User client = userRepository.findById(id)
+                .filter(user -> user.getRole() == Role.CLIENT)
+                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado"));
+
+        if (!client.getEmail().equals(request.email()) && userRepository.existsByEmail(request.email())) {
+            throw new IllegalStateException("E-mail já cadastrado");
+        }
+
+        client.setName(request.name());
+        client.setEmail(request.email());
+
+        User updated = userRepository.save(client);
+
+        return new AdminUserResponse(
+                updated.getId(),
+                updated.getName(),
+                updated.getEmail(),
+                updated.getRole().name(),
+                updated.getSpecialty(),
+                updated.getCreatedAt()
+        );
+    }
+
+    public void deleteClient(Long id) {
+        User client = userRepository.findById(id)
+                .filter(user -> user.getRole() == Role.CLIENT)
+                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado"));
+
+        userRepository.delete(client);
     }
 }

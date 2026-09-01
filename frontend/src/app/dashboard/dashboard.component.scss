@@ -274,6 +274,36 @@
   }
 }
 
+.edit-btn,
+.delete-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: white;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.edit-btn {
+  background: #3b82f6;
+
+  &:hover {
+    background: #2563eb;
+  }
+}
+
+.delete-btn {
+  background: #ef4444;
+
+  &:hover {
+    background: #dc2626;
+  }
+}
+
 .list {
   list-style: none;
   padding: 0;

@@ -4,6 +4,7 @@ import com.example.backend.user.Role;
 import com.example.backend.user.User;
 import com.example.backend.user.UserRepository;
 import com.example.backend.util.PasswordGenerator;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -47,5 +48,38 @@ public class AdminProfessionalService {
                 generated,
                 password
         );
+    }
+
+    public AdminUserResponse updateProfessional(Long id, UpdateProfessionalRequest request) {
+        User professional = userRepository.findById(id)
+                .filter(user -> user.getRole() == Role.PROFESSIONAL)
+                .orElseThrow(() -> new EntityNotFoundException("Profissional não encontrado"));
+
+        if (!professional.getEmail().equals(request.email()) && userRepository.existsByEmail(request.email())) {
+            throw new IllegalStateException("E-mail já cadastrado");
+        }
+
+        professional.setName(request.name());
+        professional.setEmail(request.email());
+        professional.setSpecialty(request.specialty());
+
+        User updated = userRepository.save(professional);
+
+        return new AdminUserResponse(
+                updated.getId(),
+                updated.getName(),
+                updated.getEmail(),
+                updated.getRole().name(),
+                updated.getSpecialty(),
+                updated.getCreatedAt()
+        );
+    }
+
+    public void deleteProfessional(Long id) {
+        User professional = userRepository.findById(id)
+                .filter(user -> user.getRole() == Role.PROFESSIONAL)
+                .orElseThrow(() -> new EntityNotFoundException("Profissional não encontrado"));
+
+        userRepository.delete(professional);
     }
 }

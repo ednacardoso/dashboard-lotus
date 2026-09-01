@@ -36,6 +36,9 @@ export class DashboardComponent implements OnInit {
   successMessage = signal<string>('');
 
   createdUser = signal<CreateUserResponse | null>(null);
+  editingProfessional = signal<AdminUser | null>(null);
+  editingClient = signal<AdminUser | null>(null);
+  editingRoom = signal<Room | null>(null);
 
   professionalForm: FormGroup;
   clientForm: FormGroup;
@@ -133,6 +136,9 @@ export class DashboardComponent implements OnInit {
     this.currentSection.set(section);
     this.clearMessages();
     this.createdUser.set(null);
+    this.cancelEditProfessional();
+    this.cancelEditClient();
+    this.cancelEditRoom();
 
     switch (section) {
       case 'overview':
@@ -270,6 +276,12 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
+    const editing = this.editingProfessional();
+    if (editing) {
+      this.updateProfessional(editing.id);
+      return;
+    }
+
     const definePassword = this.professionalForm.value.definePassword;
     const request = {
       name: this.professionalForm.value.name,
@@ -290,8 +302,62 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  startEditProfessional(professional: AdminUser): void {
+    this.editingProfessional.set(professional);
+    this.professionalForm.patchValue({
+      name: professional.name,
+      email: professional.email,
+      specialty: professional.specialty,
+      definePassword: false
+    });
+    this.updatePasswordValidators(this.professionalForm, false);
+  }
+
+  cancelEditProfessional(): void {
+    this.editingProfessional.set(null);
+    this.professionalForm.reset({ definePassword: false });
+    this.updatePasswordValidators(this.professionalForm, false);
+  }
+
+  private updateProfessional(id: number): void {
+    const request = {
+      name: this.professionalForm.value.name,
+      email: this.professionalForm.value.email,
+      specialty: this.professionalForm.value.specialty
+    };
+
+    this.adminService.updateProfessional(id, request).subscribe({
+      next: () => {
+        this.successMessage.set('Profissional atualizado com sucesso.');
+        this.cancelEditProfessional();
+        this.loadProfessionals();
+      },
+      error: (err) => this.handleError(err)
+    });
+  }
+
+  deleteProfessional(id: number): void {
+    if (!confirm('Tem certeza que deseja excluir este profissional?')) {
+      return;
+    }
+
+    this.adminService.deleteProfessional(id).subscribe({
+      next: () => {
+        this.successMessage.set('Profissional excluído com sucesso.');
+        this.loadProfessionals();
+      },
+      error: (err) => this.handleError(err)
+    });
+  }
+
   createClient(): void {
     if (this.clientForm.invalid) {
+      return;
+    }
+
+    const editing = this.editingClient();
+    if (editing) {
+      this.updateClient(editing.id);
       return;
     }
 
@@ -314,8 +380,60 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  startEditClient(client: AdminUser): void {
+    this.editingClient.set(client);
+    this.clientForm.patchValue({
+      name: client.name,
+      email: client.email,
+      definePassword: false
+    });
+    this.updatePasswordValidators(this.clientForm, false);
+  }
+
+  cancelEditClient(): void {
+    this.editingClient.set(null);
+    this.clientForm.reset({ definePassword: false });
+    this.updatePasswordValidators(this.clientForm, false);
+  }
+
+  private updateClient(id: number): void {
+    const request = {
+      name: this.clientForm.value.name,
+      email: this.clientForm.value.email
+    };
+
+    this.adminService.updateClient(id, request).subscribe({
+      next: () => {
+        this.successMessage.set('Cliente atualizado com sucesso.');
+        this.cancelEditClient();
+        this.loadClients();
+      },
+      error: (err) => this.handleError(err)
+    });
+  }
+
+  deleteClient(id: number): void {
+    if (!confirm('Tem certeza que deseja excluir este cliente?')) {
+      return;
+    }
+
+    this.adminService.deleteClient(id).subscribe({
+      next: () => {
+        this.successMessage.set('Cliente excluído com sucesso.');
+        this.loadClients();
+      },
+      error: (err) => this.handleError(err)
+    });
+  }
+
   createRoom(): void {
     if (this.roomForm.invalid) {
+      return;
+    }
+
+    const editing = this.editingRoom();
+    if (editing) {
+      this.updateRoom(editing.id);
       return;
     }
 
@@ -323,6 +441,46 @@ export class DashboardComponent implements OnInit {
       next: () => {
         this.successMessage.set('Sala cadastrada com sucesso.');
         this.roomForm.reset({ monthlyPrice: 0 });
+        this.loadRooms();
+      },
+      error: (err) => this.handleError(err)
+    });
+  }
+
+  startEditRoom(room: Room): void {
+    this.editingRoom.set(room);
+    this.roomForm.patchValue({
+      name: room.name,
+      description: room.description,
+      capacity: room.capacity,
+      monthlyPrice: room.monthlyPrice
+    });
+  }
+
+  cancelEditRoom(): void {
+    this.editingRoom.set(null);
+    this.roomForm.reset({ monthlyPrice: 0 });
+  }
+
+  private updateRoom(id: number): void {
+    this.adminService.updateRoom(id, this.roomForm.value).subscribe({
+      next: () => {
+        this.successMessage.set('Sala atualizada com sucesso.');
+        this.cancelEditRoom();
+        this.loadRooms();
+      },
+      error: (err) => this.handleError(err)
+    });
+  }
+
+  deleteRoom(id: number): void {
+    if (!confirm('Tem certeza que deseja excluir esta sala?')) {
+      return;
+    }
+
+    this.adminService.deleteRoom(id).subscribe({
+      next: () => {
+        this.successMessage.set('Sala excluída com sucesso.');
         this.loadRooms();
       },
       error: (err) => this.handleError(err)

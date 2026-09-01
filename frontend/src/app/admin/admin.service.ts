@@ -9,6 +9,8 @@ import {
   RoomRental,
   CreateUserRequest,
   CreateProfessionalRequest,
+  UpdateProfessionalRequest,
+  UpdateClientRequest,
   CreateUserResponse,
   RoomRequest,
   RoomRentalRequest
@@ -29,12 +31,28 @@ export class AdminService {
     return this.http.post<CreateUserResponse>(`${this.apiUrl}/professionals`, request);
   }
 
+  updateProfessional(id: number, request: UpdateProfessionalRequest): Observable<AdminUser> {
+    return this.http.put<AdminUser>(`${this.apiUrl}/professionals/${id}`, request);
+  }
+
+  deleteProfessional(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/professionals/${id}`);
+  }
+
   getClients(): Observable<AdminUser[]> {
     return this.http.get<AdminUser[]>(`${this.apiUrl}/clients`);
   }
 
   createClient(request: CreateUserRequest): Observable<CreateUserResponse> {
     return this.http.post<CreateUserResponse>(`${this.apiUrl}/clients`, request);
+  }
+
+  updateClient(id: number, request: UpdateClientRequest): Observable<AdminUser> {
+    return this.http.put<AdminUser>(`${this.apiUrl}/clients/${id}`, request);
+  }
+
+  deleteClient(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/clients/${id}`);
   }
 
   getAppointments(): Observable<AdminAppointment[]> {
@@ -47,6 +65,14 @@ export class AdminService {
 
   createRoom(request: RoomRequest): Observable<Room> {
     return this.http.post<Room>('/api/admin/rooms', request);
+  }
+
+  updateRoom(id: number, request: RoomRequest): Observable<Room> {
+    return this.http.put<Room>(`/api/admin/rooms/${id}`, request);
+  }
+
+  deleteRoom(id: number): Observable<void> {
+    return this.http.delete<void>(`/api/admin/rooms/${id}`);
   }
 
   toggleRoomActive(id: number): Observable<Room> {

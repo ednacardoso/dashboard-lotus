@@ -39,6 +39,12 @@ public class RoomController {
         return ResponseEntity.ok(roomService.toggleActive(id));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        roomService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/vacant")
     public ResponseEntity<List<RoomResponse>> listVacant(@RequestParam String yearMonth) {
         return ResponseEntity.ok(roomService.listVacantRooms(yearMonth));
