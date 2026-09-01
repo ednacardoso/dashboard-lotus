@@ -35,6 +35,15 @@ public class AvailabilityController {
         return ResponseEntity.ok(toResponse(availability));
     }
 
+    @PostMapping("/batch")
+    public ResponseEntity<List<AvailabilityResponse>> createBatch(@RequestBody @Valid BatchAvailabilityRequest request,
+                                                                  @AuthenticationPrincipal UserDetails userDetails) {
+        List<Availability> availabilities = availabilityService.createBatch(userDetails.getUsername(), request);
+        return ResponseEntity.ok(availabilities.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList()));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<AvailabilityResponse> update(@PathVariable Long id,
                                                      @RequestBody @Valid AvailabilityRequest request,

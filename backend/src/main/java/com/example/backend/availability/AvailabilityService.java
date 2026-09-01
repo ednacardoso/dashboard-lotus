@@ -49,6 +49,56 @@ public class AvailabilityService {
     }
 
     @Transactional
+    public List<Availability> createBatch(String email, BatchAvailabilityRequest request) {
+        if (request.endDate().isBefore(request.startDate())) {
+            throw new IllegalArgumentException("A data final deve ser posterior ou igual à data inicial");
+        }
+
+        if (!request.endTime().isAfter(request.startTime())) {
+            throw new IllegalArgumentException("O horário de término deve ser posterior ao horário de início");
+        }
+
+        if (request.daysOfWeek().stream().anyMatch(day -> day < 1 || day > 7)) {
+            throw new IllegalArgumentException("Dias da semana devem estar entre 1 (domingo) e 7 (sábado)");
+        }
+
+        User professional = loadProfessional(email);
+        List<Availability> created = new java.util.ArrayList<>();
+
+        LocalDate currentDate = request.startDate();
+        while (!currentDate.isAfter(request.endDate())) {
+            int dayOfWeek = currentDate.getDayOfWeek().getValue() % 7 + 1;
+
+            if (request.daysOfWeek().contains(dayOfWeek)) {
+                LocalTime slotStart = request.startTime();
+                while (slotStart.isBefore(request.endTime())) {
+                    LocalTime slotEnd = slotStart.plusMinutes(request.slotDurationMinutes());
+                    if (slotEnd.isAfter(request.endTime())) {
+                        break;
+                    }
+
+                    validateNoOverlap(professional, currentDate, slotStart, slotEnd, null);
+
+                    Availability availability = Availability.builder()
+                            .professional(professional)
+                            .date(currentDate)
+                            .startTime(slotStart)
+                            .endTime(slotEnd)
+                            .booked(false)
+                            .build();
+
+                    created.add(availabilityRepository.save(availability));
+                    slotStart = slotEnd;
+                }
+            }
+
+            currentDate = currentDate.plusDays(1);
+        }
+
+        return created;
+    }
+
+    @Transactional
     public Availability update(Long id, String email, AvailabilityRequest request) {
         User professional = loadProfessional(email);
         Availability availability = availabilityRepository.findById(id)
