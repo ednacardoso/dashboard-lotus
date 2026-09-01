@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { AuthService } from '../auth/auth.service';
 import { AppointmentService } from '../appointment/appointment.service';
 import { Appointment, Availability, AvailabilityRequest, Notification } from '../appointment/appointment.model';
+import { CreateUserResponse } from '../admin/admin.model';
 
 @Component({
   selector: 'app-professional-dashboard',
@@ -27,7 +28,15 @@ export class ProfessionalDashboardComponent implements OnInit {
   errorMessage = signal<string>('');
   successMessage = signal<string>('');
 
+  showClientForm = signal<boolean>(false);
+  showClientPassword = signal<boolean>(false);
+  showGeneratedPassword = signal<boolean>(false);
+  createdUser = signal<CreateUserResponse | null>(null);
+
+  clientForm: FormGroup;
   availabilityForm: FormGroup;
+
+  private readonly strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_+=<>?]).{8,}$/;
 
   constructor(
     private authService: AuthService,
@@ -40,6 +49,16 @@ export class ProfessionalDashboardComponent implements OnInit {
       startTime: ['', Validators.required],
       endTime: ['', Validators.required]
     });
+
+    this.clientForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      definePassword: [false],
+      password: ['', [Validators.required, Validators.pattern(this.strongPasswordRegex)]],
+      confirmPassword: ['', Validators.required]
+    }, { validators: this.passwordMatchValidator });
+
+    this.updatePasswordValidators(this.clientForm, false);
   }
 
   ngOnInit(): void {
@@ -84,6 +103,70 @@ export class ProfessionalDashboardComponent implements OnInit {
 
   availableSlotsCount(): number {
     return this.availabilities().filter(a => !a.booked).length;
+  }
+
+  private passwordMatchValidator(form: FormGroup): null | { passwordMismatch: true } {
+    const password = form.get('password')?.value;
+    const confirmPassword = form.get('confirmPassword')?.value;
+    if (form.get('definePassword')?.value && password !== confirmPassword) {
+      return { passwordMismatch: true };
+    }
+    return null;
+  }
+
+  private updatePasswordValidators(form: FormGroup, definePassword: boolean): void {
+    const password = form.get('password');
+    const confirmPassword = form.get('confirmPassword');
+
+    if (definePassword) {
+      password?.setValidators([Validators.required, Validators.pattern(this.strongPasswordRegex)]);
+      confirmPassword?.setValidators([Validators.required]);
+    } else {
+      password?.clearValidators();
+      confirmPassword?.clearValidators();
+    }
+
+    password?.updateValueAndValidity();
+    confirmPassword?.updateValueAndValidity();
+  }
+
+  onDefineClientPasswordChange(): void {
+    const definePassword = this.clientForm.get('definePassword')?.value;
+    this.updatePasswordValidators(this.clientForm, definePassword);
+  }
+
+  createClient(): void {
+    if (this.clientForm.invalid) {
+      return;
+    }
+
+    const definePassword = this.clientForm.value.definePassword;
+    const request = {
+      name: this.clientForm.value.name,
+      email: this.clientForm.value.email,
+      ...(definePassword ? { password: this.clientForm.value.password } : {})
+    };
+
+    this.appointmentService.createClient(request).subscribe({
+      next: (response) => {
+        this.createdUser.set(response);
+        this.successMessage.set('Cliente cadastrado com sucesso.');
+        this.clientForm.reset({ definePassword: false });
+        this.updatePasswordValidators(this.clientForm, false);
+      },
+      error: (err) => this.handleError(err)
+    });
+  }
+
+  copyPassword(): void {
+    const password = this.createdUser()?.generatedPassword;
+    if (password) {
+      navigator.clipboard.writeText(password);
+    }
+  }
+
+  closeCreatedUserModal(): void {
+    this.createdUser.set(null);
   }
 
   toggleNotifications(): void {
@@ -161,6 +244,10 @@ export class ProfessionalDashboardComponent implements OnInit {
         this.errorMessage.set(err.error?.message || err.message || 'Erro ao excluir horário.');
       }
     });
+  }
+
+  private handleError(err: any): void {
+    this.errorMessage.set(err.error?.message || err.message || 'Erro ao processar solicitação.');
   }
 
   private clearMessages(): void {

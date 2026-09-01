@@ -57,6 +57,51 @@
         </div>
       </div>
 
+      <div class="form-card">
+        <div class="section-header">
+          <h2>Cadastrar cliente</h2>
+          <button class="primary-btn" (click)="showClientForm.set(!showClientForm())">
+            {{ showClientForm() ? 'Cancelar' : 'Novo cliente' }}
+          </button>
+        </div>
+
+        <form *ngIf="showClientForm()" [formGroup]="clientForm" (ngSubmit)="createClient()" class="user-form">
+          <div class="form-row">
+            <label>
+              Nome
+              <input type="text" formControlName="name" placeholder="Nome completo" />
+            </label>
+            <label>
+              E-mail
+              <input type="email" formControlName="email" placeholder="email@exemplo.com" />
+            </label>
+          </div>
+
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="definePassword" (change)="onDefineClientPasswordChange()" />
+            Definir senha manualmente
+          </label>
+
+          <div class="form-row" *ngIf="clientForm.get('definePassword')?.value">
+            <label class="password-field">
+              Senha
+              <input [type]="showClientPassword() ? 'text' : 'password'" formControlName="password" placeholder="Mínimo 8 caracteres, maiúscula, minúscula, número e símbolo" />
+              <button type="button" class="toggle-password" (click)="showClientPassword.set(!showClientPassword())">
+                {{ showClientPassword() ? 'Ocultar' : 'Mostrar' }}
+              </button>
+            </label>
+            <label>
+              Confirmar senha
+              <input type="password" formControlName="confirmPassword" />
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-btn" [disabled]="clientForm.invalid">Cadastrar cliente</button>
+          </div>
+        </form>
+      </div>
+
       <div class="sections">
         <div class="section">
           <div class="section-header">
@@ -124,4 +169,23 @@
       </div>
     </section>
   </main>
+</div>
+
+<div class="modal-overlay" *ngIf="createdUser()">
+  <div class="modal">
+    <h2>Cliente cadastrado com sucesso</h2>
+    <p><strong>Nome:</strong> {{ createdUser()?.name }}</p>
+    <p><strong>E-mail:</strong> {{ createdUser()?.email }}</p>
+    <p *ngIf="createdUser()?.passwordGenerated"><strong>Senha temporária:</strong></p>
+    <div class="password-display" *ngIf="createdUser()?.passwordGenerated">
+      <input [type]="showGeneratedPassword() ? 'text' : 'password'" [value]="createdUser()?.generatedPassword" readonly />
+      <button type="button" (click)="showGeneratedPassword.set(!showGeneratedPassword())">
+        {{ showGeneratedPassword() ? 'Ocultar' : 'Mostrar' }}
+      </button>
+      <button type="button" (click)="copyPassword()">Copiar</button>
+    </div>
+    <div class="modal-actions">
+      <button class="primary-btn" (click)="closeCreatedUserModal()">Fechar</button>
+    </div>
+  </div>
 </div>

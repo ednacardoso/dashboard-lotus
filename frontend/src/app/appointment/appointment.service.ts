@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Appointment, AppointmentRequest, Availability, AvailabilityRequest, Notification, Professional } from './appointment.model';
+import { CreateUserRequest, CreateUserResponse } from '../admin/admin.model';
 
 @Injectable({
   providedIn: 'root'
@@ -70,5 +71,9 @@ export class AppointmentService {
 
   markNotificationAsRead(id: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/professional/notifications/${id}/read`, {});
+  }
+
+  createClient(request: CreateUserRequest): Observable<CreateUserResponse> {
+    return this.http.post<CreateUserResponse>(`${this.apiUrl}/professional/clients`, request);
   }
 }
