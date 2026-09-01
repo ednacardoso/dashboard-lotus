@@ -9,6 +9,7 @@ export interface Availability {
   date: string;
   startTime: string;
   endTime: string;
+  booked?: boolean;
 }
 
 export interface Appointment {
@@ -24,4 +25,19 @@ export interface Appointment {
 
 export interface AppointmentRequest {
   availabilityId: number;
+}
+
+export interface AvailabilityRequest {
+  date: string;
+  startTime: string;
+  endTime: string;
+}
+
+export interface Notification {
+  id: number;
+  appointmentId: number;
+  type: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
 }

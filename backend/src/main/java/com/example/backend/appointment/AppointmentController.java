@@ -39,6 +39,11 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.listMyAppointments(userDetails.getUsername()));
     }
 
+    @GetMapping("/professional/appointments")
+    public ResponseEntity<List<AppointmentResponse>> listProfessionalAppointments(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(appointmentService.listByProfessional(userDetails.getUsername()));
+    }
+
     @PutMapping("/appointments/{id}")
     public ResponseEntity<AppointmentResponse> update(@PathVariable Long id,
                                                     @RequestBody @Valid AppointmentRequest request,

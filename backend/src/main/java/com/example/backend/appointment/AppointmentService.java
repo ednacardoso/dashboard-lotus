@@ -2,6 +2,7 @@ package com.example.backend.appointment;
 
 import com.example.backend.availability.Availability;
 import com.example.backend.availability.AvailabilityRepository;
+import com.example.backend.notification.NotificationService;
 import com.example.backend.user.User;
 import com.example.backend.user.UserRepository;
 import com.example.backend.user.Role;
@@ -17,13 +18,16 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final AvailabilityRepository availabilityRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public AppointmentService(AppointmentRepository appointmentRepository,
                               AvailabilityRepository availabilityRepository,
-                              UserRepository userRepository) {
+                              UserRepository userRepository,
+                              NotificationService notificationService) {
         this.appointmentRepository = appointmentRepository;
         this.availabilityRepository = availabilityRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     public List<ProfessionalResponse> listProfessionals() {
@@ -57,6 +61,7 @@ public class AppointmentService {
                 .build();
 
         appointment = appointmentRepository.save(appointment);
+        notificationService.notifyNewAppointment(appointment);
         return toResponse(appointment);
     }
 
@@ -65,6 +70,19 @@ public class AppointmentService {
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
         return appointmentRepository.findByClientOrderByCreatedAtDesc(client).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<AppointmentResponse> listByProfessional(String professionalEmail) {
+        User professional = userRepository.findByEmail(professionalEmail)
+                .orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
+
+        if (professional.getRole() != Role.PROFESSIONAL) {
+            throw new RuntimeException("Acesso restrito a profissionais");
+        }
+
+        return appointmentRepository.findByProfessionalOrderByAvailabilityDateDescStartTimeAsc(professional).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
@@ -115,6 +133,7 @@ public class AppointmentService {
         appointment.getAvailability().setBooked(false);
         availabilityRepository.save(appointment.getAvailability());
         appointmentRepository.save(appointment);
+        notificationService.notifyCancellation(appointment);
     }
 
     private AppointmentResponse toResponse(Appointment appointment) {

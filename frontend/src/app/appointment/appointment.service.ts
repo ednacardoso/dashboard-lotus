@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Appointment, AppointmentRequest, Availability, Professional } from './appointment.model';
+import { Appointment, AppointmentRequest, Availability, AvailabilityRequest, Notification, Professional } from './appointment.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +20,28 @@ export class AppointmentService {
     });
   }
 
+  getProfessionalAvailabilities(): Observable<Availability[]> {
+    return this.http.get<Availability[]>(`${this.apiUrl}/professional/availabilities`);
+  }
+
+  createAvailability(request: AvailabilityRequest): Observable<Availability> {
+    return this.http.post<Availability>(`${this.apiUrl}/professional/availabilities`, request);
+  }
+
+  updateAvailability(id: number, request: AvailabilityRequest): Observable<Availability> {
+    return this.http.put<Availability>(`${this.apiUrl}/professional/availabilities/${id}`, request);
+  }
+
+  deleteAvailability(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/professional/availabilities/${id}`);
+  }
+
   getMyAppointments(): Observable<Appointment[]> {
     return this.http.get<Appointment[]>(`${this.apiUrl}/appointments/my`);
+  }
+
+  getProfessionalAppointments(): Observable<Appointment[]> {
+    return this.http.get<Appointment[]>(`${this.apiUrl}/professional/appointments`);
   }
 
   createAppointment(request: AppointmentRequest): Observable<Appointment> {
@@ -34,5 +54,21 @@ export class AppointmentService {
 
   cancelAppointment(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/appointments/${id}`);
+  }
+
+  getNotifications(): Observable<Notification[]> {
+    return this.http.get<Notification[]>(`${this.apiUrl}/professional/notifications`);
+  }
+
+  getUnreadNotifications(): Observable<Notification[]> {
+    return this.http.get<Notification[]>(`${this.apiUrl}/professional/notifications/unread`);
+  }
+
+  getUnreadNotificationCount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/professional/notifications/unread/count`);
+  }
+
+  markNotificationAsRead(id: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/professional/notifications/${id}/read`, {});
   }
 }
