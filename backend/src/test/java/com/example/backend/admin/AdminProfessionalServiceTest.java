@@ -33,7 +33,7 @@ class AdminProfessionalServiceTest {
         CreateProfessionalRequest request = new CreateProfessionalRequest(
                 "Dra. Ana",
                 "ana@example.com",
-                "senha123",
+                "Senha@123",
                 "Psicologia"
         );
 
@@ -51,11 +51,12 @@ class AdminProfessionalServiceTest {
 
         when(userRepository.save(org.mockito.ArgumentMatchers.any(User.class))).thenReturn(savedUser);
 
-        ProfessionalCreatedResponse response = adminProfessionalService.createProfessional(request);
+        CreateUserResponse response = adminProfessionalService.createProfessional(request);
 
         assertThat(response.id()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo("Dra. Ana");
         assertThat(response.email()).isEqualTo("ana@example.com");
+        assertThat(response.role()).isEqualTo("PROFESSIONAL");
         assertThat(response.specialty()).isEqualTo("Psicologia");
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);

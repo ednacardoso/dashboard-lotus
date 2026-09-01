@@ -37,7 +37,7 @@ class AdminControllerTest {
         CreateProfessionalRequest request = new CreateProfessionalRequest(
                 "Dra. Ana",
                 "ana.unique@example.com",
-                "senha123",
+                "Senha@123",
                 "Psicologia"
         );
 
@@ -56,7 +56,7 @@ class AdminControllerTest {
         CreateProfessionalRequest request = new CreateProfessionalRequest(
                 "Dr. João",
                 "joao.unique@example.com",
-                "senha123",
+                "Senha@123",
                 "Nutrição"
         );
 
@@ -72,7 +72,7 @@ class AdminControllerTest {
         CreateProfessionalRequest request = new CreateProfessionalRequest(
                 "Dra. Maria",
                 "maria.unique@example.com",
-                "senha123",
+                "Senha@123",
                 "Fisioterapia"
         );
 
@@ -88,7 +88,7 @@ class AdminControllerTest {
         CreateProfessionalRequest request = new CreateProfessionalRequest(
                 "Dr. Carlos",
                 "carlos.unique@example.com",
-                "senha123",
+                "Senha@123",
                 "Cardiologia"
         );
 
@@ -103,7 +103,7 @@ class AdminControllerTest {
         CreateProfessionalRequest request = new CreateProfessionalRequest(
                 "Dr. Duplicado",
                 "duplicado.unique@example.com",
-                "senha123",
+                "Senha@123",
                 "Dermatologia"
         );
 

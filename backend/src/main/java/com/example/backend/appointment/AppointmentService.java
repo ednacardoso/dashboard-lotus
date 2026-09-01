@@ -82,7 +82,7 @@ public class AppointmentService {
             throw new RuntimeException("Acesso restrito a profissionais");
         }
 
-        return appointmentRepository.findByProfessionalOrderByAvailabilityDateDescStartTimeAsc(professional).stream()
+        return appointmentRepository.findByProfessionalOrderByAvailability_DateDescAvailability_StartTimeAsc(professional).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
